@@ -1,11 +1,11 @@
 let vendors = 'webkit|moz|ms|o'.split('|');
 let transitionEventsMap = {
-  'webkit': ['webkitTransitionEnd'],
-  'moz': ['transitionend'],
-  'o': ['OTransitionEnd', 'otransitionend'],
-  '': ['transitionend']
+  'webkit': 'webkitTransitionEnd',
+  'moz': 'transitionend',
+  'o': 'otransitionend',
+  '': 'transitionend'
 };
-let transitionEventNames;
+let transitionEndEvent;
 let transitionProperty = 'Transition';
 let transitionVendor = '';
 let transformProperty = 'Transform';
@@ -30,17 +30,17 @@ if (transitionProperty.toLowerCase() in style) {
 })) {
   transitionProperty = null;
 } else if (transitionVendor in transitionEventsMap) {
-  transitionEventNames = transitionEventsMap[transitionVendor];
+  transitionEndEvent = transitionEventsMap[transitionVendor];
 }
 
 if (!transitionVendor && !window.TransitionEvent && window.WebKitTransitionEvent) {
   transitionVendor = 'webkit';
   transitionProperty = transitionVendor + 'Transition';
-  transitionEventNames = transitionEventsMap[transitionVendor];
+  transitionEndEvent = transitionEventsMap[transitionVendor];
 }
 
-if (!transitionEventNames) {
-  transitionEventNames = transitionEventsMap[''];
+if (!transitionEndEvent) {
+  transitionEndEvent = transitionEventsMap[''];
 }
 
 if (transformProperty.toLowerCase() in style) {
@@ -88,10 +88,14 @@ if (backfaceKey in style) {
   backfaceProperty = null;
 }
 
-style = null;
+let pointerEvents = document.documentMode < 11 ? false : 'pointerEvents' in style;
+// Utils.hasCSSWillChange = 'willChange' in computedOfDiv;
+// Utils.hasCSSTouchAction = 'touchAction' in computedOfDiv ||
+  // 'msTouchAction' in computedOfDiv;
 
+style = null;
 export default {
-  transitionEventNames,
+  transitionEndEvent,
 
   transform: transformProperty,
   transformOrigin,
@@ -105,5 +109,7 @@ export default {
   transformProperty,
   transitionProperty,
   perspectiveProperty,
-  backfaceProperty
+  backfaceProperty,
+
+  pointerEvents,
 };
